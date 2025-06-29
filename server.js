@@ -45,15 +45,17 @@ cors_proxy.createServer({
     // Do not add X-Forwarded-For, etc. headers, because Heroku already adds it.
     xfwd: false,
   },
-  handleInitialRequest: function (req,res,pathname,proxyReqOpts) {
-    var targetHost = proxyReqOpts.hostname;
-    if (!hostWhitelist.include(targetHost) && hostWhitelist.lenght > 0) {
-      res.writeHead(403,{'Content-Type':'text/plain'});
-      res.end('Access to this host is not allowed.');
-      return true;
+  handleInitialRequest: function (req, res, pathname) {
+    if (pathname) {
+      var targetHost = pathname.hostname;
+      if (!hostWhitelist.include(targetHost) && hostWhitelist.lenght > 0) {
+        res.writeHead(403, {'Content-Type': 'text/plain'});
+        res.end('Access to this host is not allowed.');
+        return true;
+      };
     }
     return false;
   },
-}).listen(port, host, function() {
+}).listen(port, host, function () {
   console.log('Running CORS Anywhere on ' + host + ':' + port);
 });
