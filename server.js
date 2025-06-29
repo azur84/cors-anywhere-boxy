@@ -9,6 +9,7 @@ var port = process.env.PORT || 8080;
 // use originWhitelist instead.
 var originBlacklist = parseEnvList(process.env.CORSANYWHERE_BLACKLIST);
 var originWhitelist = parseEnvList(process.env.CORSANYWHERE_WHITELIST);
+var hostWhitelist = parseEnvList(process.env.CORSANYWHERE_HOSTWHITELIST);
 function parseEnvList(env) {
   if (!env) {
     return [];
@@ -43,6 +44,15 @@ cors_proxy.createServer({
   httpProxyOptions: {
     // Do not add X-Forwarded-For, etc. headers, because Heroku already adds it.
     xfwd: false,
+  },
+  handleInitialRequest: function (req,res,pathname,proxyReqOpts) {
+    var targetHost = proxyReqOpts.hostname;
+    if (!hostWhitelist.include(targetHost) && hostWhitelist.lenght > 0) {
+      res.writeHead(403,{'Content-Type':'text/plain'});
+      res.end('Access to this host is not allowed.');
+      return true;
+    }
+    return false;
   },
 }).listen(port, host, function() {
   console.log('Running CORS Anywhere on ' + host + ':' + port);
