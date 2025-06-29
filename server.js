@@ -48,7 +48,7 @@ cors_proxy.createServer({
   handleInitialRequest: function (req, res, pathname) {
     if (pathname) {
       var targetHost = pathname.hostname;
-      if (!hostWhitelist.includes(targetHost) && hostWhitelist.lenght > 0) {
+      if (!hostWhitelist.includes(targetHost) && hostWhitelist.length > 0) {
         res.writeHead(403, {'Content-Type': 'text/plain'});
         res.end('Access to this host is not allowed.');
         return true;
